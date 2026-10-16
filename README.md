@@ -27,3 +27,7 @@ feature switch, for example `in-twilight colours` on linkedin.com.
   (`wfm-`, `wiki-` and `bwf-twilight colours`). These sites are dark already, so their surfaces
   are ranked darkest to lightest onto the four Twilight background cells. Colours the sites write
   as literals, outside their tokens, stay as they are.
+- `tools/rutracker_colours.py`: rutracker.org (`rt-twilight colours`). The site has no colour
+  tokens, so every rule of its stylesheet that sets a colour is repeated with a Twilight cell in
+  place of each literal. The feature joins the stock `rutracker.org.css` entry. Colours written
+  inline in the page (news, BBCode in posts) stay as they are.
