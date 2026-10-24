@@ -28,6 +28,34 @@ EXPANDED_TEXT_CSS = """
 }
 """
 
+JOB_SELECTION_CSS = """
+/* Limit page selection to the open job's company, title and description. */
+body:has([id^="JobDetails_AboutTheJob_"]) * {
+  user-select: none !important;
+}
+
+body [data-testid="lazy-column"]:has([id^="JobDetails_AboutTheJob_"])
+  > div:has(a[href*="/company/"]):has(a[href*="/jobs/view/"])
+  p > a:is([href*="/company/"], [href*="/jobs/view/"]),
+body [data-testid="lazy-column"]:has([id^="JobDetails_AboutTheJob_"])
+  > div:has(a[href*="/company/"]):has(a[href*="/jobs/view/"])
+  p > a:is([href*="/company/"], [href*="/jobs/view/"]) *,
+body [id^="JobDetails_AboutTheJob_"] [data-testid="expandable-text-box"],
+body [id^="JobDetails_AboutTheJob_"] [data-testid="expandable-text-box"] * {
+  user-select: text !important;
+}
+
+body [id^="JobDetails_AboutTheJob_"] [data-testid="expandable-text-box"] button,
+body [id^="JobDetails_AboutTheJob_"] [data-testid="expandable-text-box"] button * {
+  user-select: none !important;
+}
+
+body:has([id^="JobDetails_AboutTheJob_"])
+  :is(input, textarea, [contenteditable="true"], [contenteditable="true"] *) {
+  user-select: text !important;
+}
+"""
+
 BG0, BG1, BG2, BG3 = "#0a000f", "#0f0016", "#14001e", "#1b0028"
 FG, FG_BRIGHT, LIGHT = "#ba70e0", "#cc9ee2", "#e5d9ba"
 SUB, DIM = "#8579bb", "#7265b9"
@@ -156,6 +184,7 @@ def main():
             lines.append(f"  {name}: {new} !important;")
     css_out = (":root, html, body, [class*=\"theme--\"] {\n" + "\n".join(lines) + "\n}\n")
     css_out += EXPANDED_TEXT_CSS
+    css_out += JOB_SELECTION_CSS
     out = Path(__file__).resolve().parent.parent / "overrides" / "linkedin.com.json"
     out.write_text(json.dumps({"+linkedin.com.css": {"in-twilight colours": css_out}}, indent=2) + "\n")
     print(f"{len(lines)} of {len(tokens)} tokens remapped -> {out}")
