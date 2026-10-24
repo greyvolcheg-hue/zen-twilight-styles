@@ -17,6 +17,17 @@ from pathlib import Path
 
 DEFAULT_CSS = "https://static.licdn.com/aero-v1/sc/h/e34z9ok0cr46ybpximu64wtan"
 
+EXPANDED_TEXT_CSS = """
+[data-testid="expandable-text-box"] {
+  display: block !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  -webkit-line-clamp: unset !important;
+  line-clamp: none !important;
+}
+"""
+
 BG0, BG1, BG2, BG3 = "#0a000f", "#0f0016", "#14001e", "#1b0028"
 FG, FG_BRIGHT, LIGHT = "#ba70e0", "#cc9ee2", "#e5d9ba"
 SUB, DIM = "#8579bb", "#7265b9"
@@ -144,6 +155,7 @@ def main():
         if new:
             lines.append(f"  {name}: {new} !important;")
     css_out = (":root, html, body, [class*=\"theme--\"] {\n" + "\n".join(lines) + "\n}\n")
+    css_out += EXPANDED_TEXT_CSS
     out = Path(__file__).resolve().parent.parent / "overrides" / "linkedin.com.json"
     out.write_text(json.dumps({"+linkedin.com.css": {"in-twilight colours": css_out}}, indent=2) + "\n")
     print(f"{len(lines)} of {len(tokens)} tokens remapped -> {out}")
