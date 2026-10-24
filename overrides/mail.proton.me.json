@@ -1,0 +1,5 @@
+{
+  "mail.proton.me.css": {
+    "protonmail-Invert message": "iframe[data-testid=\"content-iframe\"] {\n  filter: invert(1) !important;\n}"
+  }
+}
