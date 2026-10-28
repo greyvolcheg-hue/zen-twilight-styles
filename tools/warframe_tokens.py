@@ -33,6 +33,18 @@ SITES = {
         "block": r"\.theme--dark(?:,\.theme--light)?\{([^}]*)\}",  # shared block, then dark
         "selector": ":root, .theme--dark, .theme--light",
         "feature": "wfm-twilight colours",
+        # The site's dark #161e21 reads as blue text and lands on ACC, the same cell as the
+        # primary button it sits on (1:1). BG0 on ACC gives 8.16:1.
+        "fixed": {"--color_button_text": BG0},
+        # Outline buttons draw their border at 25% of --color_rgb_link, about 1.5:1 on the row.
+        # The alpha sits in the site rule, not a token, so the border is restated opaque.
+        # Hashed class suffixes change between builds, hence [class*=].
+        "extra": (
+            '[class*="btn__light--"]:not([class*="red--"]) {{ border-color: {o} !important; }}\n'
+            '[class*="btn__light--"]:not([class*="red--"]):hover {{ border-color: {h} !important; }}\n'
+            '[class*="btn__light--"]:not([class*="red--"]):is(:active, :focus, .active)'
+            ' {{ border-color: {a} !important; }}\n'
+        ).format(o=OUTLINE, h=ACC_HOVER, a=ACC_ACTIVE),
     },
     "wiki.warframe.com": {
         "page": "https://wiki.warframe.com/w/Main_Page",
@@ -170,13 +182,15 @@ def build(site, cfg):
     surfaces = sorted(surfaces)
     lines = []
     for name, value in sorted(tokens.items()):
-        if name.endswith("-rgb"):
+        if name in cfg.get("fixed", {}):
+            new = cfg["fixed"][name]
+        elif name.endswith("-rgb"):
             new = remap_rgb_triplet(name, value, tokens, surfaces)
         else:
             new = remap(name, value, surfaces)
         if new:
             lines.append(f"  {name}: {new} !important;")
-    css_out = cfg["selector"] + " {\n" + "\n".join(lines) + "\n}\n"
+    css_out = cfg["selector"] + " {\n" + "\n".join(lines) + "\n}\n" + cfg.get("extra", "")
     out = Path(__file__).resolve().parent.parent / "overrides" / f"{site}.json"
     out.write_text(json.dumps({f"+{site}.css": {cfg["feature"]: css_out}}, indent=2) + "\n")
     print(f"{site}: {len(lines)} of {len(tokens)} tokens remapped -> {out.name}")
