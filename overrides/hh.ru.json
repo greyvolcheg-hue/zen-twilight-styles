@@ -1,0 +1,5 @@
+{
+  "+hh.ru.css": {
+    "hh-vacancy selection": "/* Limit page selection to the vacancy title, company and description. */\nbody:has([data-qa=\"vacancy-description\"]) * {\n  user-select: none !important;\n}\n\nbody [data-qa=\"vacancy-title\"],\nbody [data-qa=\"vacancy-title\"] *,\nbody [data-qa=\"vacancy-company-name\"],\nbody [data-qa=\"vacancy-company-name\"] *,\nbody [data-qa=\"vacancy-description\"],\nbody [data-qa=\"vacancy-description\"] * {\n  user-select: text !important;\n}\n\nbody:has([data-qa=\"vacancy-description\"])\n  :is(input, textarea, [contenteditable=\"true\"], [contenteditable=\"true\"] *) {\n  user-select: text !important;\n}\n"
+  }
+}
