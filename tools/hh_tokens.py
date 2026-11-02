@@ -9,7 +9,7 @@ the older Bloko (~730 --bloko-*color*). Every token name carries the design syst
 stylesheet URLs are read from the live home page for the same reason. Tokens are remapped by role
 and hue as linkedin_tokens.py does for LinkedIn. Tokens that point at another token through var()
 are restated as they are, so the night theme cannot repaint them. Colours written as literals in
-the site rules are not covered.
+the site rules are not covered, except the base text colour on body.
 
 Usage: tools/hh_tokens.py
 """
@@ -31,6 +31,9 @@ TOKEN = r"(--(?:magritte|bloko)-[a-z0-9-]*color[a-z0-9-]*)\s*:\s*([^;}]+)"
 SELECTOR = ':root, html, body, [class*="magritte-"][class*="-theme"]'
 FEATURE = "hh-twilight colours"
 NEUTRAL_SPREAD = 40  # max - min channel below this is a grey; hh.ru accents start at 83
+# hh.ru sets its base text colour as a literal, body { color: #2a3137 }, not through a token; the
+# vacancy title and description inherit it.
+BODY_CSS = f"body {{ color: {FG} !important; }}\n"
 UA = "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0"
 
 
@@ -90,7 +93,7 @@ def main():
             lines.append(f"  {name}: {new} !important;")
     out = Path(__file__).resolve().parent.parent / "overrides" / "hh.ru.json"
     data = json.loads(out.read_text())
-    data["+hh.ru.css"][FEATURE] = SELECTOR + " {\n" + "\n".join(lines) + "\n}\n"
+    data["+hh.ru.css"][FEATURE] = SELECTOR + " {\n" + "\n".join(lines) + "\n}\n" + BODY_CSS
     out.write_text(json.dumps(data, indent=2) + "\n")
     print(f"hh.ru: {len(lines)} of {len(tokens)} tokens remapped from {len(hrefs)} stylesheet(s)")
 
