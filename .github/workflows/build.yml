@@ -3,9 +3,9 @@ name: build styles.json
 on:
   push:
     branches: [main]
-    paths: [overrides/**, build.py]
+    paths: [overrides/**, build.py, tools/hh_tokens.py]
   schedule:
-    - cron: "17 4 * * *"  # daily: pick up changes in the stock repository
+    - cron: "17 4 * * *"  # daily: pick up changes in the stock repository and hh.ru token names
   workflow_dispatch:
 
 permissions:
@@ -19,10 +19,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - name: regenerate hh.ru tokens
+        # hh.ru puts its design system version into every token name. On failure the last
+        # committed overrides/hh.ru.json stays and the build goes on.
+        run: python tools/hh_tokens.py
+        continue-on-error: true
       - run: python build.py
-      - name: commit styles.json if it changed
+      - name: commit styles.json and overrides/hh.ru.json if they changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add styles.json
+          git add styles.json overrides/hh.ru.json
           git diff --cached --quiet || git commit -m "Rebuild styles.json" && git push

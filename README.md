@@ -23,6 +23,9 @@ feature switch, for example `in-twilight colours` on linkedin.com.
   replaces the stock one.
 - A GitHub Action rebuilds `styles.json` daily and on every change to `overrides/`.
 - `tools/linkedin_tokens.py`: regenerates the LinkedIn recolour from LinkedIn's own colour tokens.
+- `tools/hh_tokens.py`: the same for hh.ru (`hh-twilight colours`), from its Magritte and Bloko
+  tokens. hh.ru puts its design system version into every token name, so the Action reruns it
+  daily. hh.kz serves the same stylesheets and gets the feature through `overrides/mapping.json`.
 - `tools/warframe_tokens.py`: the same for warframe.market, wiki.warframe.com and browse.wf
   (`wfm-`, `wiki-` and `bwf-twilight colours`). These sites are dark already, so their surfaces
   are ranked darkest to lightest onto the four Twilight background cells. Colours the sites write
