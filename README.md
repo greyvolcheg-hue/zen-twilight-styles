@@ -34,3 +34,7 @@ feature switch, for example `in-twilight colours` on linkedin.com.
   tokens, so every rule of its stylesheet that sets a colour is repeated with a Twilight cell in
   place of each literal. The feature joins the stock `rutracker.org.css` entry. Colours written
   inline in the page (news, BBCode in posts) stay as they are.
+- `tools/typing_colours.py`: typing.com (`typing-twilight colours`), the public site and the
+  lessons in the default skin. No colour tokens either, so it works as the rutracker tool does;
+  the site's two stylesheets share class names, so `@scope` holds each to its own pages. The
+  stylesheet URLs carry the release number, so the Action reruns it daily.
