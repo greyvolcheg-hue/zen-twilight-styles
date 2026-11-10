@@ -1,7 +1,7 @@
 # zen-twilight-styles
 
 Site styles for the [Zen Internet](https://addons.mozilla.org/firefox/addon/zen-internet/) add-on:
-the stock repository plus Twilight recolours. Twilight is a dark violet palette built from the
+Twilight recolours only, no stock styles (dropped 2026-11-10). Twilight is a dark violet palette built from the
 Warframe Twilight colours.
 
 ## Use
@@ -19,8 +19,7 @@ feature switch, for example `in-twilight colours` on linkedin.com.
 
 - `overrides/*.json`: our features per site, in the Zen Internet format
   (`{"+site.com.css": {"feature name": "css"}}`).
-- `build.py`: downloads the stock `styles.json` and lays the overrides on top. A same-named feature
-  replaces the stock one.
+- `build.py`: joins the overrides into `styles.json`.
 - A GitHub Action rebuilds `styles.json` daily and on every change to `overrides/`.
 - `tools/linkedin_tokens.py`: regenerates the LinkedIn recolour from LinkedIn's own colour tokens.
 - `tools/hh_tokens.py`: the same for hh.ru (`hh-twilight colours`), from its Magritte and Bloko
@@ -32,7 +31,7 @@ feature switch, for example `in-twilight colours` on linkedin.com.
   as literals, outside their tokens, stay as they are.
 - `tools/rutracker_colours.py`: rutracker.org (`rt-twilight colours`). The site has no colour
   tokens, so every rule of its stylesheet that sets a colour is repeated with a Twilight cell in
-  place of each literal. The feature joins the stock `rutracker.org.css` entry. Colours written
+  place of each literal. The site key keeps the stock spelling `rutracker.org.css`. Colours written
   inline in the page (news, BBCode in posts) stay as they are.
 - `tools/typing_colours.py`: typing.com (`typing-twilight colours`), the public site and the
   lessons in the default skin. No colour tokens either, so it works as the rutracker tool does;

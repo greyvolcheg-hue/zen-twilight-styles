@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths: [overrides/**, build.py, tools/hh_tokens.py, tools/typing_colours.py]
   schedule:
-    - cron: "17 4 * * *"  # daily: pick up changes in the stock repository, hh.ru and typing.com
+    - cron: "17 4 * * *"  # daily: pick up changes in hh.ru and typing.com
   workflow_dispatch:
 
 permissions:
