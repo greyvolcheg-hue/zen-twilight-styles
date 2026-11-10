@@ -11,7 +11,8 @@ hash that changes with each release, so the GitHub Action reruns this daily. Pag
 of other pages are not covered: those pages answer scripts with a JavaScript challenge.
 
 last.fm's brand red (#d92323 and its hover and pale variants) takes the accent cells, as
-LinkedIn's blue does. Its native dark surfaces (header, footer) fall to the darkest cell.
+LinkedIn's blue does. Pale yellow surfaces (the now-scrobbling row) take BG3; saturated yellow
+ones (the Pro buttons) take WARN, and dark text on them takes BG0. Its native dark surfaces (header, footer) fall to the darkest cell.
 Shadows, images and the album art stay as they are. Rules written with CSS nesting (Swiper's
 carousel: slide shadows, the preloader) are skipped.
 
@@ -22,7 +23,7 @@ import re
 import sys
 from pathlib import Path
 
-from linkedin_tokens import ACC, ACC_ACTIVE, ACC_HOVER, BG3, LIGHT, SEL, hue_class, luminance, parse, rgba, state_colour
+from linkedin_tokens import ACC, ACC_ACTIVE, ACC_HOVER, BG0, BG3, LIGHT, SEL, WARN, hue_class, luminance, parse, rgba, state_colour
 from rutracker_colours import COLOUR, FORM_CONTROLS, NAMED, PROPS, cell as rutracker_cell, fetch
 
 SITE = "https://www.last.fm"
@@ -31,10 +32,15 @@ SITE_KEY = "+last.fm.css"
 FEATURE = "lfm-twilight colours"
 
 
-def cell(role, rgb_a, selector):
-    """rutracker_colours.cell, with the reds read as the accent."""
+def cell(role, rgb_a, selector, on_yellow=False):
+    """rutracker_colours.cell, with the reds read as the accent and last.fm's yellows."""
     r, g, b, a = rgb_a
-    if hue_class(r, g, b) != "negative":
+    hc = hue_class(r, g, b)
+    if hc == "warning" and role == "bg":
+        return rgba(BG3, a) if luminance(r, g, b) > 0.85 else rgba(WARN, a)
+    if on_yellow and role == "fg" and hc == "neutral" and luminance(r, g, b) < 0.35:
+        return rgba(BG0, a)  # #222 on the Pro buttons
+    if hc != "negative":
         return rutracker_cell(role, rgb_a, selector)
     lum = luminance(r, g, b)
     if role == "fg":
@@ -47,7 +53,7 @@ def cell(role, rgb_a, selector):
     return rgba(BG3, a) if lum > 0.75 else rgba(SEL, a)
 
 
-def recolour(value, role, selector):
+def recolour(value, role, selector, on_yellow=False):
     """Replace every colour literal in a value. None if nothing in it is a colour to change."""
     changed = False
 
@@ -58,7 +64,7 @@ def recolour(value, role, selector):
         if p is None:
             return lit
         changed = True
-        return cell(role, p, selector)
+        return cell(role, p, selector, on_yellow)
 
     try:
         out = COLOUR.sub(one, value)
@@ -67,9 +73,19 @@ def recolour(value, role, selector):
     return out if changed else None
 
 
+def yellow_bg(body):
+    """True if the rule sets a saturated yellow background, one that becomes WARN."""
+    for m in re.finditer(r"background(?:-color)?\s*:([^;]*)", body, re.I):
+        for c in COLOUR.finditer(m.group(1)):
+            p = parse(NAMED.get(c.group(0).lower(), c.group(0)))
+            if p and hue_class(*p[:3]) == "warning" and luminance(*p[:3]) <= 0.85:
+                return True
+    return False
+
+
 def rule_out(selector, body):
     """The override declarations for one rule."""
-    lines = []
+    lines, on_yellow = [], yellow_bg(body)
     for decl in body.split(";"):
         if ":" not in decl:
             continue
@@ -87,7 +103,7 @@ def rule_out(selector, body):
         colours = [c.group(0) for c in COLOUR.finditer(value)]
         if not colours:
             continue  # transparent, inherit, url() only
-        new = recolour(colours[-1] if target != prop else value, role, selector)
+        new = recolour(colours[-1] if target != prop else value, role, selector, on_yellow)
         if new:
             lines.append(f"{target}: {new}")
     return [f"  {line} !important;" for line in lines]
