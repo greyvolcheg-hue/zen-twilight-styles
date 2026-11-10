@@ -37,3 +37,7 @@ feature switch, for example `in-twilight colours` on linkedin.com.
   lessons in the default skin. No colour tokens either, so it works as the rutracker tool does;
   the site's two stylesheets share class names, so `@scope` holds each to its own pages. The
   stylesheet URLs carry the release number, so the Action reruns it daily.
+- `tools/lastfm_colours.py`: last.fm (`lfm-twilight colours`), the same way as typing.com, from
+  the stylesheets linked on the front page. The brand red takes the accent cells. Page-specific
+  stylesheets of other pages are not covered: those pages answer scripts with a JavaScript
+  challenge. The stylesheet names carry a build hash, so the Action reruns it daily.

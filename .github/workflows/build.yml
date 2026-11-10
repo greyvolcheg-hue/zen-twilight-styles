@@ -3,9 +3,9 @@ name: build styles.json
 on:
   push:
     branches: [main]
-    paths: [overrides/**, build.py, tools/hh_tokens.py, tools/typing_colours.py]
+    paths: [overrides/**, build.py, tools/hh_tokens.py, tools/typing_colours.py, tools/lastfm_colours.py]
   schedule:
-    - cron: "17 4 * * *"  # daily: pick up changes in hh.ru and typing.com
+    - cron: "17 4 * * *"  # daily: pick up changes in hh.ru, typing.com and last.fm
   workflow_dispatch:
 
 permissions:
@@ -29,10 +29,15 @@ jobs:
         # committed overrides/typing.com.json stays and the build goes on.
         run: python tools/typing_colours.py
         continue-on-error: true
+      - name: regenerate last.fm colours
+        # last.fm puts a build hash into the stylesheet names. On failure the last committed
+        # overrides/last.fm.json stays and the build goes on.
+        run: python tools/lastfm_colours.py
+        continue-on-error: true
       - run: python build.py
       - name: commit styles.json and regenerated overrides if they changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add styles.json overrides/hh.ru.json overrides/typing.com.json
+          git add styles.json overrides/hh.ru.json overrides/typing.com.json overrides/last.fm.json
           git diff --cached --quiet || git commit -m "Rebuild styles.json" && git push
